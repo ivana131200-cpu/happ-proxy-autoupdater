@@ -2,15 +2,15 @@
 
 **Статус:** ✅ Успешно протестировано и обновлено  
 **Отобрано лучших серверов:** `80` (из `4032` проверенных)  
-**Отсеяно мертвых/медленных:** `340`  
-**Диапазон пинга:** `min 2.6 ms` / `avg 29.8 ms` / `max 110.2 ms`  
-**Время обновления (UTC):** `2026-09-28 14:31:11`
+**Отсеяно мертвых/медленных:** `338`  
+**Диапазон пинга:** `min 5.2 ms` / `avg 14.4 ms` / `max 80.0 ms`  
+**Время обновления (UTC):** `2026-09-28 14:32:21`
 
 ---
 
 ### 📲 Ссылка для клиента Happ (Добавьте 1 раз):
 ```text
-happ://crypt5/fzvd3buqSXvFSKveFfAqm2ls2098Oj8yUeYnKTB/KLOucjQd+VYoJ9AJOK7PUUIO75aSsnrh5hBhmV4GfRmDpePZhDcBbzTrK5kVLpt8WAW6jVcxSwhOwt0WOp5Xf92dAm3qimtt4n88Cb6nfPuZrtevDspriG1aB5ox+41FGAZTRUCHSBGQ/ds2rTZ/QJDrF6bafI/P0wRk2QIhqLv0t9pNN6870kH+TQOzHeD42ytluxWiJh7l201VJvlauKsHJq8ZkmkaAXYUe/vNZehyYz90FtNT+uwge3rGYlvcghEbNbQvc6mT1s1YYQoUoDfRdbO4rIICdIXrfj1RYkYVWYdoGyH9yY0N8q4ubSkNq8+74xgs076J/m8mbd5lAjh8R48/6grUuITfmgV2g1fFtlYsXW9jueMn/69IiLGZhoaeiP2yRTCOIhBUvncmHkDzNPG7/DK/07XHPx4Rf5PGAX5fEJhYt6P3g93tcAHR6tUvdHcEdLqFA+6PfU7v1HoZ6GGbJUo82IH8ofv1yl40QqBfWAF4XvV5C2CwEmVa/JTLQZRFSBZXWvrYZj42/dIWeHOZsliP7tZ4cXLLb3y5V06866dVWqlDBO1hLDOQAdmktdP0/32+Kx/KnC65P0+73MhwkHaWNsTB0r7ahOZrY4ZDQhJY5wE5mGTbLG+X1Ua6ZM6+TlWy7HFI51F8S0oROi8S4eP0S+6C/8yLdGWGAytJQuYh4HxXCd6d1HSKpOeJPp9rRocAeiWgS7d2XXAyzgLDeNo0YywCPGZe7Xq6u33tjLkYdQVX5m79VKdpYmm/HaKaN7WKzAAyuoO3mc/znm/8CjLAUG52GjuGzaXLlmnGaCoxjfDX4+1Dg1EUMoNVy+SY+slHT+Bam1HyXHxWBV7IGT2zwQO4n4v8ETEDhRblfoY=ff
+happ://crypt5/fzvdcYz0zQXh8utIaWMj7IgZ20iNMp8O73cZ+JN83yqvoyAA7xCsYr5XhsJvte1O/PPlrNltdUgSAA0JOboeibpygUiEUCOY/qWT0ii3gCqcuaovKj2WEg7dZJiJH6J0XQDzsqxFwO5RuJTYBF5FEqGhbn6PcaOIwn2M0WXhTTmQOZn1LjPcxQ4QZDEHnt+0uER7pHxieC02swORJd4g5mQgEx9xcSyIVV59v/55OPI/cZz6Uza3IifRIy9TphXVL9V/DStw1Ez9xVrdHqsTHRJc5R+IvtXdU36nX/dLAUUwVYPZaHeKP17tTj5sgyf0pc1TSA3xhojVKiLuSVkx0JGLMMO0abMoITrmdA73lmA/b3bi2qA+3TdqQOsnYtEahqJWMZP2byvEW3xIVp6HQrUCOXYbm6DKGM6R4c9Nv1//ZwsVaKSFGUGiREFqVIqF5NscBGf00xAwFhj6o6k0bK20140yeCjvomc1BRoqUrQb26fHWv0pnuYeEjsb4mHr6i2cNQMlBuRNI0escUbtkrdnEmVnSdM8N6HW/RWjtfCRmMZPSkVttifm8PxFhcopnpJwwBEagr352EFrn23JxLarT1nfRXKcorjrlisXh6AfHFNG2ppodX4aRG2UScYdplMerzpW/hF43HA69Sy6qBmSS40qOrwPA8q4//IDRZODDvztQoFayB7mmPGzROEp283JCRUsIefsUZ3scuOAjrj7kRtyPU6pFm8lIHdxzLRnZDSlpDFiQzZOHKwtIbrhX+1yOwK6oCSE5JH3uNs39jKxELQfyZZFwXrQ2/PtGzGlkfYTqw3S6gZbzp1hMwJ7joFTuuZpjwC0epwuaULgpH/wSqWn0Ll1RxFt5LkswIo5GVuZiol7WzbH0sxO7QDfPb7p1ksTLjE7kQ0LylIDskPdfoI=ff
 ```
 
 ---
@@ -18,16 +18,16 @@ happ://crypt5/fzvd3buqSXvFSKveFfAqm2ls2098Oj8yUeYnKTB/KLOucjQd+VYoJ9AJOK7PUUIO75
 ### 🏆 Топ-10 быстрейших серверов в этой выборке:
 | Место | Пинг (RTT) | Протокол | Хост:Порт |
 |:---:|:---:|:---:|:---|
-| #1 | **2.6 ms** | `TROJAN` | `151.101.56.7:443` |
-| #2 | **8.6 ms** | `VLESS` | `162.159.43.187:2082` |
-| #3 | **8.6 ms** | `TROJAN` | `23.227.38.11:443` |
-| #4 | **8.6 ms** | `TROJAN` | `130.250.137.171:443` |
-| #5 | **8.7 ms** | `VLESS` | `155.117.199.13:39211` |
-| #6 | **8.7 ms** | `VLESS` | `104.18.33.168:443` |
-| #7 | **8.7 ms** | `VLESS` | `8.35.211.35:443` |
-| #8 | **8.7 ms** | `VLESS` | `104.17.70.206:2096` |
-| #9 | **8.7 ms** | `TROJAN` | `141.101.90.101:443` |
-| #10 | **8.7 ms** | `TROJAN` | `192.236.151.43:443` |
+| #1 | **5.2 ms** | `TROJAN` | `104.26.15.137:443` |
+| #2 | **5.3 ms** | `TROJAN` | `104.18.152.175:443` |
+| #3 | **5.3 ms** | `TROJAN` | `104.18.152.204:443` |
+| #4 | **5.3 ms** | `TROJAN` | `104.18.152.159:443` |
+| #5 | **5.3 ms** | `TROJAN` | `45.130.125.158:443` |
+| #6 | **5.4 ms** | `VLESS` | `91.193.58.118:2096` |
+| #7 | **5.4 ms** | `VLESS` | `104.17.49.4:443` |
+| #8 | **5.4 ms** | `TROJAN` | `104.20.6.134:443` |
+| #9 | **5.4 ms** | `TROJAN` | `216.24.57.1:443` |
+| #10 | **5.4 ms** | `TROJAN` | `23.227.38.11:443` |
 
 ---
 
@@ -35,10 +35,10 @@ happ://crypt5/fzvd3buqSXvFSKveFfAqm2ls2098Oj8yUeYnKTB/KLOucjQd+VYoJ9AJOK7PUUIO75
 | Протокол | Количество лучших серверов |
 |---|---|
 | **VLESS** | 26 |
-| **Trojan** | 53 |
+| **Trojan** | 54 |
 | **Shadowsocks** | 0 |
 | **VMess** | 0 |
-| **Hysteria2 / TUIC** | 1 |
+| **Hysteria2 / TUIC** | 0 |
 
 ---
 
