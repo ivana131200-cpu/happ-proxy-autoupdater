@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
-Autonomous Happ Proxy Subscription Generator & Latency Optimizer
+Autonomous Happ Proxy Subscription Generator & Anti-Censorship Optimizer
+Engineered specifically for maximum compatibility with VLESS Reality & DPI bypass.
 Author: Senior DevOps & Python Engineer
 License: MIT
 """
@@ -14,7 +15,7 @@ import base64
 import socket
 import logging
 from typing import Dict, List, Optional, Set, Tuple, Any
-from urllib.parse import urlparse
+from urllib.parse import urlparse, unquote
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import requests
 from requests.adapters import HTTPAdapter
@@ -33,35 +34,47 @@ if not logger.handlers:
     logger.addHandler(_handler)
 logger.propagate = False
 
-# --- Configuration ---
+# --- High-Quality Sources (Specialized in VLESS Reality, DPI bypass & Russia) ---
 SOURCES = [
-    "https://raw.githubusercontent.com/Pawdroid/Free-servers/main/sub",
+    # 1. Primary: igareck/vpn-configs-for-russia (8,900+ Stars, tested against Russian DPI)
+    "https://raw.githubusercontent.com/igareck/vpn-configs-for-russia/main/BLACK_VLESS_RUS.txt",
+    "https://raw.githubusercontent.com/igareck/vpn-configs-for-russia/main/Vless-Reality-White-Lists-Rus-Mobile.txt",
+    "https://raw.githubusercontent.com/igareck/vpn-configs-for-russia/main/BLACK_SS+All_RUS.txt",
+    # 2. Curated Daily Anti-Censorship Aggregators
+    "https://raw.githubusercontent.com/cbusifabcap/daily_free_vpn/main/Z.txt",
+    "https://raw.githubusercontent.com/solovyov-jenya2004/all_subs/main/final_sorted",
     "https://raw.githubusercontent.com/ermaozi/get_subscribe/main/subscribe/v2ray.txt",
-    "https://raw.githubusercontent.com/ts-sf/fly/main/v2",
-    "https://raw.githubusercontent.com/freefq/free/master/v2",
-    "https://raw.githubusercontent.com/mahdibland/V2RayAggregator/master/sub/sub_merge.txt",
 ]
 
 SUPPORTED_SCHEMES = (
     "vless://",
-    "trojan://",
-    "ss://",
-    "vmess://",
     "hysteria2://",
     "hy2://",
+    "trojan://",
+    "ss://",
     "tuic://",
+    "vmess://",
+)
+
+# Known Cloudflare Anycast IP ranges that return fake 3ms ping on GitHub runners
+# but are blocked or dead inside client apps (causing N/A in Happ).
+CLOUDFLARE_ANYCAST_PREFIXES = (
+    "104.16.", "104.17.", "104.18.", "104.19.", "104.20.", "104.21.", "104.22.", "104.23.",
+    "104.24.", "104.25.", "104.26.", "104.27.", "104.28.", "104.29.", "104.30.", "104.31.",
+    "172.64.", "172.65.", "172.66.", "172.67.", "172.68.", "172.69.", "172.70.", "172.71.",
+    "162.159.", "198.41.", "141.101.", "108.162.", "190.93.", "188.114.", "197.234.",
 )
 
 # Quality & Ping Thresholds
-PING_TIMEOUT_SEC = 1.8       # Strict connection timeout (seconds)
-MAX_ALLOWED_PING_MS = 500.0  # Discard any server with latency above 500ms
-MAX_TEST_CANDIDATES = 500    # Optimal candidate pool size for blazing fast CI/CD
-TOP_BEST_NODES = 80          # Keep top 80 fastest, most responsive servers
-CHECK_WORKERS = 80           # Parallel threads for speed check
+PING_TIMEOUT_SEC = 2.0       # Timeout for TCP socket connection
+MAX_ALLOWED_PING_MS = 600.0  # Discard any server with ping > 600ms
+MAX_TEST_POOL = 400          # Top prioritized candidates tested in parallel
+TOP_BEST_NODES = 80          # Keep top 80 genuine, low-latency nodes
+CHECK_WORKERS = 75           # Parallel threads
 
 HAPP_CRYPTO_API = "https://crypto.happ.su/api-v2.php"
 GIST_FILENAME = "subscription.txt"
-GIST_DESCRIPTION = "Happ Proxy Auto-Updated Subscription [Top Speed & Low Latency]"
+GIST_DESCRIPTION = "Happ Proxy Auto-Updated Subscription [VLESS Reality & Low Latency]"
 
 
 def get_http_session() -> requests.Session:
@@ -106,7 +119,7 @@ def try_decode_base64(raw_text: str) -> str:
 
 def fetch_source_configs(session: requests.Session, url: str) -> List[str]:
     """Fetch nodes from a remote URL with error handling."""
-    logger.info(f"Downloading configs from: {url}")
+    logger.info(f"Downloading from: {url}")
     configs: List[str] = []
     try:
         response = session.get(url, timeout=12)
@@ -122,7 +135,7 @@ def fetch_source_configs(session: requests.Session, url: str) -> List[str]:
 
         logger.info(f"  -> Extracted {len(configs)} raw nodes")
     except Exception as e:
-        logger.warning(f"Error reading {url}: {e}")
+        logger.warning(f"Error fetching {url}: {e}")
 
     return configs
 
@@ -140,7 +153,6 @@ def extract_host_and_port(node_uri: str) -> Tuple[Optional[str], Optional[int]]:
                 p = urlparse(node_uri)
                 return p.hostname, p.port or 8388
             else:
-                # Legacy base64 SS format
                 pad = len(body) % 4
                 if pad:
                     body += "=" * (4 - pad)
@@ -165,25 +177,47 @@ def extract_host_and_port(node_uri: str) -> Tuple[Optional[str], Optional[int]]:
     return None, None
 
 
+def is_fake_cloudflare_node(host: Optional[str], node_uri: str) -> bool:
+    """
+    Detect Cloudflare Anycast IPs and reverse-proxy workers.
+    These respond with fake 3ms ping on GitHub runners but fail with N/A in client apps.
+    """
+    if not host:
+        return True
+
+    # Cloudflare Anycast IP check
+    if any(host.startswith(prefix) for prefix in CLOUDFLARE_ANYCAST_PREFIXES):
+        return True
+
+    # Check WebSocket workers on Cloudflare
+    lower_uri = node_uri.lower()
+    if "type=ws" in lower_uri:
+        if any(cf in lower_uri for cf in ("cloudflare", "workers.dev", "pages.dev")):
+            return True
+
+    return False
+
+
 def is_valid_candidate(node: str, host: Optional[str], port: Optional[int]) -> bool:
-    """Pre-filter corrupted nodes or private/loopback IP addresses."""
+    """Pre-filter corrupted nodes, loopbacks, and fake Cloudflare workers."""
     if not host or not port or port <= 0 or port > 65535:
         return False
-    if len(node) < 20:
+    if len(node) < 25:
         return False
 
     invalid_hosts = ("127.0.0.1", "localhost", "0.0.0.0", "::1")
     if host in invalid_hosts or host.startswith(("192.168.", "10.")):
         return False
 
+    # Filter out fake Cloudflare CDN nodes that cause 'N/A'
+    if is_fake_cloudflare_node(host, node):
+        return False
+
     return True
 
 
 def check_tcp_ping(host: str, port: int, timeout: float = PING_TIMEOUT_SEC) -> Optional[float]:
-    """
-    Measure exact TCP connection handshake latency (RTT) in milliseconds.
-    Resolves both IPv4 and IPv6 transparently. Returns None if dead/unreachable.
-    """
+    """Measure exact TCP connection handshake latency (RTT) in milliseconds."""
     t_start = time.perf_counter()
     try:
         with socket.create_connection((host, port), timeout=timeout):
@@ -193,9 +227,12 @@ def check_tcp_ping(host: str, port: int, timeout: float = PING_TIMEOUT_SEC) -> O
         return None
 
 
-def format_node_with_ping_badge(node_uri: str, ping_ms: float) -> str:
-    """Add latency badge like ⚡ [45ms] to server name so it displays in Happ."""
-    badge = f"⚡ [{int(ping_ms)}ms]"
+def clean_and_format_remark(node_uri: str, ping_ms: float) -> str:
+    """
+    Sanitize remarks and append clean latency badge like [45ms].
+    Fixes percent-encoding corruption that causes Happ to fail parsing.
+    """
+    badge = f"[{int(ping_ms)}ms]"
 
     # Handle VMess JSON ps field
     if node_uri.startswith("vmess://"):
@@ -205,21 +242,26 @@ def format_node_with_ping_badge(node_uri: str, ping_ms: float) -> str:
             if pad:
                 body += "=" * (4 - pad)
             data = json.loads(base64.b64decode(body).decode("utf-8", errors="ignore"))
-            old_ps = data.get("ps", "VMess")
-            clean_ps = re.sub(r"⚡\s*\[\d+ms\]\s*", "", old_ps).strip()
+            old_ps = unquote(data.get("ps", "VMess"))
+            clean_ps = re.sub(r"^\[\d+ms\]\s*", "", old_ps).strip()
             data["ps"] = f"{badge} {clean_ps}"
             new_b64 = base64.b64encode(json.dumps(data, ensure_ascii=False).encode("utf-8")).decode("utf-8")
             return f"vmess://{new_b64}"
         except Exception:
             return node_uri
 
-    # Handle URI remarks (#remark)
+    # Handle standard URI remarks (#remark)
     if "#" in node_uri:
-        base, old_remark = node_uri.split("#", 1)
-        clean_remark = re.sub(r"⚡\s*\[\d+ms\]\s*", "", old_remark).strip()
+        base, raw_remark = node_uri.split("#", 1)
+        # Unquote percent-encoding (%F0%9F...) to avoid parser breakage
+        decoded_remark = unquote(raw_remark).strip()
+        clean_remark = re.sub(r"^\[\d+ms\]\s*", "", decoded_remark).strip()
+        clean_remark = re.sub(r"[\r\n\t]+", " ", clean_remark).strip()
+        if not clean_remark:
+            clean_remark = "ProxyNode"
         return f"{base}#{badge} {clean_remark}"
     else:
-        proto = node_uri.split("://")[0].upper()
+        proto = "REALITY" if "security=reality" in node_uri else node_uri.split("://")[0].upper()
         return f"{node_uri}#{badge} {proto}"
 
 
@@ -247,25 +289,27 @@ def test_and_filter_nodes(
         seen_endpoints.add(endpoint)
         unique_candidates.append((node, host, port))
 
-    # Prioritize modern anti-censorship protocols for testing
-    def candidate_priority(item: Tuple[str, str, int]) -> int:
+    # Priority sorting: VLESS Reality & Hysteria2 get highest priority
+    def anti_censorship_priority(item: Tuple[str, str, int]) -> int:
         n = item[0]
-        if n.startswith(("vless://", "hysteria2://", "hy2://", "tuic://")):
-            return 0
-        if n.startswith("trojan://"):
-            return 1
-        if n.startswith("ss://"):
+        if "security=reality" in n:
+            return 0  # Absolute best for Russian DPI bypass
+        if n.startswith(("hysteria2://", "hy2://")):
+            return 1  # Excellent UDP obfuscation
+        if n.startswith("vless://"):
             return 2
-        return 3
+        if n.startswith("trojan://"):
+            return 3
+        return 4
 
-    unique_candidates.sort(key=candidate_priority)
-    test_pool = unique_candidates[:MAX_TEST_CANDIDATES]
+    unique_candidates.sort(key=anti_censorship_priority)
+    test_pool = unique_candidates[:MAX_TEST_POOL]
 
     logger.info(
-        f"Total extracted: {len(raw_nodes)} | Unique candidates: {len(unique_candidates)} "
+        f"Total extracted: {len(raw_nodes)} | Filtered genuine candidates: {len(unique_candidates)} "
         f"| Pool for ping test: {len(test_pool)}"
     )
-    logger.info(f"Testing live latency (timeout={PING_TIMEOUT_SEC}s, max_workers={CHECK_WORKERS})...")
+    logger.info(f"Testing real socket connection (timeout={PING_TIMEOUT_SEC}s, max_workers={CHECK_WORKERS})...")
 
     alive_results: List[Dict[str, Any]] = []
     dead_count = 0
@@ -281,26 +325,28 @@ def test_and_filter_nodes(
             ping = future.result()
             node, host, port = future_map[future]
             if ping is not None and ping <= MAX_ALLOWED_PING_MS:
-                proto = node.split("://")[0].replace("://", "").lower()
+                is_reality = "security=reality" in node
+                proto_name = "reality" if is_reality else node.split("://")[0].lower()
                 alive_results.append({
                     "node": node,
                     "host": host,
                     "port": port,
                     "ping": ping,
-                    "proto": proto,
+                    "is_reality": is_reality,
+                    "proto": proto_name,
                 })
             else:
                 dead_count += 1
 
     total_test_duration = time.perf_counter() - t_start
-    logger.info(f"Ping test completed in {total_test_duration:.2f}s!")
-    logger.info(f"Alive & Fast (<={MAX_ALLOWED_PING_MS}ms): {len(alive_results)} | Dead/Slow filtered: {dead_count}")
+    logger.info(f"Live ping test completed in {total_test_duration:.2f}s!")
+    logger.info(f"Alive & Reachable: {len(alive_results)} | Dead/Slow filtered: {dead_count}")
 
     if not alive_results:
-        raise RuntimeError("No nodes responded to ping tests with acceptable latency!")
+        raise RuntimeError("No nodes responded to live ping tests with acceptable latency!")
 
-    # Sort strictly by lowest latency (ascending)
-    alive_results.sort(key=lambda x: x["ping"])
+    # Sort: Reality first, then lowest ping ascending
+    alive_results.sort(key=lambda x: (0 if x["is_reality"] else 1, x["ping"]))
 
     # Select top N best servers
     selected = alive_results[:TOP_BEST_NODES]
@@ -308,13 +354,14 @@ def test_and_filter_nodes(
     # Gather statistics
     pings = [item["ping"] for item in selected]
     stats = {
-        "total_tested": len(unique_candidates),
+        "total_tested": len(test_pool),
         "alive_count": len(alive_results),
         "dead_count": dead_count,
         "selected_count": len(selected),
         "min_ping": min(pings),
         "avg_ping": round(sum(pings) / len(pings), 1),
         "max_ping": max(pings),
+        "reality_count": sum(1 for item in selected if item["is_reality"]),
         "proto_breakdown": {},
     }
 
@@ -323,8 +370,8 @@ def test_and_filter_nodes(
         stats["proto_breakdown"][pr] = stats["proto_breakdown"].get(pr, 0) + 1
 
     logger.info(
-        f"Selected Top {len(selected)} Nodes. Ping stats: "
-        f"Min: {stats['min_ping']}ms | Avg: {stats['avg_ping']}ms | Max: {stats['max_ping']}ms"
+        f"Selected Top {len(selected)} Nodes ({stats['reality_count']} VLESS Reality). "
+        f"Ping: Min {stats['min_ping']}ms | Avg {stats['avg_ping']}ms | Max {stats['max_ping']}ms"
     )
     logger.info(f"Protocol breakdown: {stats['proto_breakdown']}")
 
@@ -425,10 +472,9 @@ def write_summary_report(
     stats: Dict[str, Any],
 ):
     """Write rich markdown summary to GitHub Actions Step Summary and files."""
-    # Top 5 fastest nodes preview table
     fastest_table_rows = []
-    for idx, item in enumerate(top_items[:10], 1):
-        proto = item["proto"].upper()
+    for idx, item in enumerate(top_items[:12], 1):
+        proto = "VLESS Reality 🛡️" if item["is_reality"] else item["proto"].upper()
         host = item["host"]
         port = item["port"]
         ping = item["ping"]
@@ -436,11 +482,11 @@ def write_summary_report(
 
     table_content = "\n".join(fastest_table_rows)
 
-    summary_md = f"""# ⚡ Happ Proxy Auto-Updated Subscription (Low Latency)
+    summary_md = f"""# ⚡ Happ Proxy Auto-Updated Subscription (VLESS Reality & DPI Bypass)
 
 **Статус:** ✅ Успешно протестировано и обновлено  
-**Отобрано лучших серверов:** `{stats['selected_count']}` (из `{stats['total_tested']}` проверенных)  
-**Отсеяно мертвых/медленных:** `{stats['dead_count']}`  
+**Отобрано лучших серверов:** `{stats['selected_count']}`  
+**Из них VLESS Reality (обход ТСПУ/DPI):** `{stats['reality_count']}`  
 **Диапазон пинга:** `min {stats['min_ping']} ms` / `avg {stats['avg_ping']} ms` / `max {stats['max_ping']} ms`  
 **Время обновления (UTC):** `{time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime())}`
 
@@ -453,7 +499,7 @@ def write_summary_report(
 
 ---
 
-### 🏆 Топ-10 быстрейших серверов в этой выборке:
+### 🏆 Топ быстрейших серверов VLESS Reality:
 | Место | Пинг (RTT) | Протокол | Хост:Порт |
 |:---:|:---:|:---:|:---|
 {table_content}
@@ -461,13 +507,13 @@ def write_summary_report(
 ---
 
 ### 📊 Распределение протоколов:
-| Протокол | Количество лучших серверов |
+| Протокол | Количество проверенных узлов |
 |---|---|
-| **VLESS** | {stats['proto_breakdown'].get('vless', 0)} |
+| **VLESS Reality** | {stats['proto_breakdown'].get('reality', 0)} |
+| **Hysteria2 / TUIC** | {stats['proto_breakdown'].get('hysteria2', 0) + stats['proto_breakdown'].get('hy2', 0) + stats['proto_breakdown'].get('tuic', 0)} |
 | **Trojan** | {stats['proto_breakdown'].get('trojan', 0)} |
 | **Shadowsocks** | {stats['proto_breakdown'].get('ss', 0)} |
 | **VMess** | {stats['proto_breakdown'].get('vmess', 0)} |
-| **Hysteria2 / TUIC** | {stats['proto_breakdown'].get('hysteria2', 0) + stats['proto_breakdown'].get('hy2', 0) + stats['proto_breakdown'].get('tuic', 0)} |
 
 ---
 
@@ -478,7 +524,7 @@ def write_summary_report(
 """
 
     print("\n" + "=" * 80)
-    print("ГОТОВАЯ ССЫЛКА HAPP PROXY С ОПТИМАЛЬНЫМ ПИНГОМ:")
+    print("ГОТОВАЯ ССЫЛКА HAPP PROXY (VLESS REALITY & LOW LATENCY):")
     print(happ_link)
     print("=" * 80 + "\n")
 
@@ -498,15 +544,15 @@ def write_summary_report(
 
 
 def main():
-    logger.info("=== Запуск оптимизатора подписки Happ Proxy (Low Latency Engine) ===")
+    logger.info("=== Запуск генератора Happ Proxy (VLESS Reality & DPI-Bypass Edition) ===")
     session = get_http_session()
 
-    # 1. Сбор, многопоточный пинг-тест и отбор быстрейших
+    # 1. Сбор, фильтрация Cloudflare Anycast, пинг-тест и отбор лучших
     best_nodes_data, stats = test_and_filter_nodes(session)
 
-    # 2. Форматирование меток пинга: ⚡ [Xms]
+    # 2. Форматирование меток: [Xms] Remark (без повреждения кодировки URI)
     formatted_nodes = [
-        format_node_with_ping_badge(item["node"], item["ping"])
+        clean_and_format_remark(item["node"], item["ping"])
         for item in best_nodes_data
     ]
 
@@ -521,7 +567,7 @@ def main():
         logger.warning("GIST_TOKEN не задан. Запуск в DRY-RUN режиме.")
         with open("subscription.txt", "w", encoding="utf-8") as f:
             f.write(b64_content)
-        logger.info("Файл subscription.txt сохранен локально с лучшими серверами.")
+        logger.info("Файл subscription.txt сохранен с лучшими серверами VLESS Reality.")
         return
 
     try:
@@ -551,7 +597,7 @@ def main():
         stats=stats,
     )
 
-    logger.info("=== Обновление успешно завершено! Все серверы отфильтрованы по минимальному пингу. ===")
+    logger.info("=== Обновление успешно завершено! Все серверы проверены и готовы к работе. ===")
 
 
 if __name__ == "__main__":
