@@ -1,0 +1,61 @@
+name: Update Happ Proxy Subscription
+
+on:
+  schedule:
+    # Run automatically every 4 hours
+    - cron: '0 */4 * * *'
+  workflow_dispatch: # Allows manual trigger from GitHub UI
+  push:
+    branches:
+      - main
+    paths:
+      - 'main.py'
+      - 'requirements.txt'
+
+# Prevent concurrent runs from colliding
+concurrency:
+  group: subscription-update
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  update-subscription:
+    runs-on: ubuntu-latest
+    name: Sync Gist & Generate Happ Link
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Happ Updater
+        env:
+          GIST_TOKEN: ${{ secrets.GIST_TOKEN }}
+          GIST_ID: ${{ secrets.GIST_ID }}
+        run: |
+          python main.py
+
+      - name: Persist generated links in repository
+        continue-on-error: true
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add happ_link.txt HAPP_SUBSCRIPTION.md
+          if git diff --staged --quiet; then
+            echo "No changes in subscription files to commit."
+          else
+            git commit -m "chore(sub): auto-update Happ subscription [skip ci]"
+            git push origin HEAD || echo "Push failed or not permitted, skipping git commit."
+          fi
