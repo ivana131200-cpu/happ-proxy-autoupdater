@@ -2,13 +2,13 @@
 
 **Статус:** ✅ Успешно протестировано и обновлено  
 **Отобрано рабочих серверов:** `105`  
-**Время обновления (UTC):** `2026-10-06 10:56:37`
+**Время обновления (UTC):** `2026-10-06 17:40:22`
 
 ---
 
 ### 📲 Ссылка для клиента Happ (Добавьте 1 раз):
 ```text
-happ://crypt5/fzvdyNWMl1w1mjJYJuanczqa20M0hk8pZ+KV8207DdKHSMl/3ICq0h24Td78fRFqfF/m0qmFMeCikSIQG0rXBJuC8nf5ykNVT80zAzdAvTlDVq29ty6AWnOcTmafp+W3eoAY0r0AjznbwTlhLK1Qd9rFyBJs99+yorT9K+M7qdNh9fbOIPd9KdAnqkyt5DEHLNUXpOaf6PsLPA1A2lE0P/4WrBdepLo2B2KFsKNMkkuXx+wV/PKkmRsb6+1vv0wlPLDjbPEoNOjlGW/30vU7AIKV5sd4TCsKWM7NrxTurVuv43nTuH2u2LEuwU3eTrWqYANZFQMpyNDBHYUPwuxFqjBr220Kc9fgi0jqL7DenM6xVM4OAd5VU4cdkKbkc4JM1me0imzQiA77cmlrGI/vub0Um+m/Es9pquMtWccae470aN79s7SsNqKJLTrsdQ/wpt+2I+SpjZ+3ATLIt//lq+OWbbPdrBUR5FJrSLRDi08sKxHJEUNPZm+Du/6FB48ps2b4X0OOsG6eqzlDh0fYMZ+5ISMjYCLQiOe0wB+isu4d2qi46lH79OqTQnqQlQPdDofEbEwyJkhVRaE42nfnzQfws1iLeY8sOyS2KFuVW5mss/Kp/Mc96rvzLkKjhSblzpAuGp58Kx+iE8LWMGfmSgNYdjBMGeXMYKKMH9uGHNp6NTE+l6H2SOCraQGHIEVWoG3t5JCQh9PTwwKZfd4hgcZ9J7sp5Mlz11it9+QzWem0JaxaKhzAzrE4niKcMIu4DM3vvhW3n83Qc9kH7VDmPMNfC7S1P0pt/ztoWBWlqujWz6fKMqJge4BrBI1XtcydmWkNV2ZQ8V/UbnirJC8Eas7AAuq9FxrF6qyNJvI/oFIp3MDzl8btVFqyf2X4u6tufzR1WeQXV3dIU+0fPWEJfu5jfok=ff
+happ://crypt5/fzvdcztTroPo4TRM86GFBp2D20elXc8n1mjIRQE5ssob0Lio3em5x+5rAH7EtlxSjEjhM4wuyOalP7vdwuHYa3lnKVsoXvqwsSzGhhDC/9HvVOWfFnxz+c/TYWZbKjL2zaZBmI2aykurPcHyf4MSWfrpdMfMSAf/Yzcs1rYBbGtIgb7H9VosZqr118fAPCKkI3YOFvm0CNZjdfkFRKFvFskrOaSa1Pvixz6ReBxC/VpuNzH7JHgMbJR6HliCyZMSHlpj+CA5+6B2HbR7uye3g4lXjzDS5Mm13Tq1MYZQecaU4prEgG9NU+cwZjFRqGHfLtARuti8O0fJfLYDJtJ/JFmzc4rA5yy9suPONJ3giaTouXnCHgPYr7D/5ZrU9X1KdvVgiouUKFLYuHzlE5mpzeTcjwhMJmvR+QDYhc8RcTSaK5BQoJCTTX37LN2du0PpLWAAsaz9b0noxhGVOkmBPePIurqJ29OyGtk8nCNveuOOocn/nkhl3hNoaQzOxhm5Sd3rqO+uffLtW29vvE0uoGcqKtq1wvUMxrxR9sEUVMiQyHbIP74G3+DW9KE0lt/9mGxht2kCD9EjdEWeOIElFBqF6HlggqosE34bkLsZlnAr2Mfbt2RnVedcoDtZmXZor/KNvhYpkNEyjyhEbBgUKlLKEHBsZptTyu19ojp7NzsrXAOAFCFiFpeVuC2GAJhJbFRGtNZ2RNK7LV9DsFbDKbS9iVeSpJDkRDhpSQi8oDMBf0WdluxYxU+VlSBEr4s/zEGM9Bj+DVI0wGxyQPdH3mBFj2Rd6kKl3IkECXNO2cH4UEaxYjNDae6J31t2VhcFClUddHY9j1pPfviLdgjYqac6H4FNsPF+9N6C5Oq72F0SUi3wtTKcwV6kJ93BIOtqdZv5GQg1aJx0VtN5+ydSTgtqfo0=ff
 ```
 
 ---
@@ -26,5 +26,5 @@ happ://crypt5/fzvdyNWMl1w1mjJYJuanczqa20M0hk8pZ+KV8207DdKHSMl/3ICq0h24Td78fRFqfF
 
 ### 🌐 Постоянный адрес подписки (Gist RAW):
 ```text
-https://gist.githubusercontent.com/ivana131200-cpu/6d9ee9a0e99beec411d08a2fd98c0dfe/raw/subscription.txt
+https://gist.githubusercontent.com/ivana131200-cpu/19fdd21f5e7bce1e6e390dc1a4cec912/raw/subscription.txt
 ```
